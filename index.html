@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>PDF Page Size Analyzer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.js">
+  </script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.worker.js';
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/png;base64,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">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .input-group {
+      margin-bottom: 10px;
+    }
+
+    select,
+    input[type="file"],
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    select:focus,
+    input[type="file"]:focus,
+    button:focus {
+      outline: none;
+      border-color: #2196F3;
+    }
+
+    .divider {
+      margin: 20px 0;
+      border-top: 1px solid #ccc;
+    }
+
+    .result-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .result-section h2 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .result-section p {
+      font-weight: bold;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .calculate-button {
+      width: 100%;
+      background-color: #967BB6;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .calculate-button:hover {
+      background-color: #84619C;
+    }
+
+    .credits {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .credits p {
+      margin: 0;
+      color: #333;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .progress-bar {
+      background-color: #e6e6e6;
+      border-radius: 4px;
+      height: 15px;
+      overflow: hidden;
+    }
+
+    .progress-bar-inner {
+      background-color: #d1d1f6;
+      height: 100%;
+      width: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>PDF Page Size Analyzer</h1>
+    <form id="form">
+      <div class="input-group"> <label for="file-type">Choose an option:</label> <select id="file-type">
+          <option value="files" selected>Select PDF file(s)</option>
+          <option value="folder-of-files">Select a folder of PDF file(s)</option>
+        </select> </div> <span id="input-container"> <input type="file" id="pdf-file" accept="application/pdf" multiple /> </span> <button type="submit" class="calculate-button">Calculate</button> <button type="button" id="advanced-report" onclick="toggleLogWindow()" disabled>Advanced Report</button>
+      <div class="result-section">
+        <h2>Total PDF Metrics:</h2>
+        <p id="result">
+        </p>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-bar-inner" id="progress-bar">
+        </div>
+      </div>
+    </form>
+    <div class="credits">
+      <p>Made with ❤️ by Martin Kirekchiev © 2023</p>
+    </div>
+  </div>
+  <div id="log-window" style="display: none; position: absolute; top: 20px; right: 20px; width: 30%; height: 50%; z-index: 1000; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em;">
+    <pre id="log-content">
+</pre>
+  </div>
+  <script>
+    const form = document.getElementById('form');
+    const inputContainer = document.getElementById('input-container');
+    const resultDiv = document.getElementById('result');
+    const advancedReportButton = document.getElementById('advanced-report');
+    const progressBar = document.getElementById('progress-bar');
+    const fileType = document.getElementById('file-type');
+    const logWindow = document.getElementById('log-window');
+    const logContent = document.getElementById('log-content');
+    resultDiv.textContent = '—';
+    progressBar.style.width = '0%';
+    let errorCount = 0;
+    const readFileAsArrayBuffer = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result);
+        };
+        reader.onerror = (error) => {
+          reject(error);
+        };
+        reader.readAsArrayBuffer(file);
+      });
+    };
+    const POINTS_TO_INCHES = 1 / 72;
+    const INCHES_TO_METERS = 0.0254;
+    const A4_WIDTH = 0.210;
+    const A4_HEIGHT = 0.297;
+    const A3_WIDTH = 0.297;
+    const A3_HEIGHT = 0.420;
+    const MILLIMETERS_TO_METERS = 0.001; // 10 mm
+    const TOLERANCE_MM = 10;
+    const isPageA4 = (width, height) => {
+      return (
+        ((width <= A4_WIDTH + TOLERANCE_MM * MILLIMETERS_TO_METERS) && (height <= A4_HEIGHT + TOLERANCE_MM * MILLIMETERS_TO_METERS)) || ((width <= A4_HEIGHT + TOLERANCE_MM * MILLIMETERS_TO_METERS) && (height <= A4_WIDTH + TOLERANCE_MM * MILLIMETERS_TO_METERS)));
+    };
+    const isPageA3 = (width, height) => {
+      return (
+        ((width > A4_WIDTH + TOLERANCE_MM * MILLIMETERS_TO_METERS && width <= A3_WIDTH + TOLERANCE_MM * MILLIMETERS_TO_METERS) && (height > A4_HEIGHT + TOLERANCE_MM * MILLIMETERS_TO_METERS && height <= A3_HEIGHT + TOLERANCE_MM * MILLIMETERS_TO_METERS)) || ((height > A4_WIDTH + TOLERANCE_MM * MILLIMETERS_TO_METERS && height <= A3_WIDTH + TOLERANCE_MM * MILLIMETERS_TO_METERS) && (width > A4_HEIGHT + TOLERANCE_MM * MILLIMETERS_TO_METERS && width <= A3_HEIGHT + TOLERANCE_MM * MILLIMETERS_TO_METERS)));
+    };
+    let logData = '';
+    let calculationCompletedTime;
+    const toggleLogWindow = () => {
+      if (logWindow.style.display === 'none') {
+        logContent.textContent = logData;
+        logWindow.style.display = 'block';
+      } else {
+        logWindow.style.display = 'none';
+      }
+    };
+    const refreshLogWindow = () => {
+      if (logWindow.style.display === 'block') {
+        logContent.textContent = logData;
+        logWindow.style.display = 'block';
+      } else {
+        logWindow.style.display = 'none';
+      }
+    };
+    const updateLogWindowVisibility = () => {
+      const inputFile = document.getElementById('pdf-file');
+      if (!inputFile.files.length) {
+        logWindow.style.display = 'none';
+      }
+    };
+    const calculateArea = async (file) => {
+      try {
+        const fileArrayBuffer = await readFileAsArrayBuffer(file);
+        const pdf = await pdfjsLib.getDocument({
+          data: fileArrayBuffer
+        }).promise;
+        const numPages = pdf.numPages;
+        let totalArea = 0;
+        let a4Pages = 0;
+        let a3Pages = 0;
+        let wideFormatPages = 0;
+        for (let i = 1; i <= numPages; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({
+            scale: 1
+          });
+          const widthInMeters = viewport.width * POINTS_TO_INCHES * INCHES_TO_METERS;
+          const heightInMeters = viewport.height * POINTS_TO_INCHES * INCHES_TO_METERS;
+          if (isPageA4(widthInMeters, heightInMeters)) {
+            a4Pages++;
+          } else if (isPageA3(widthInMeters, heightInMeters)) {
+            a3Pages++;
+          } else {
+            const area = widthInMeters * heightInMeters;
+            totalArea += area;
+            wideFormatPages++;
+          }
+        }
+        return {
+          numPages,
+          area: totalArea,
+          a4Pages,
+          a3Pages,
+          wideFormatPages,
+          error: null,
+        };
+      } catch (error) {
+        let errorMessage = '';
+        if (error.name === 'InvalidPDFException' && error.message === 'The PDF file is empty, i.e. its size is zero bytes.') {
+          errorMessage = `File '${file.name}' is empty and cannot be opened.`;
+          console.error(errorMessage);
+        } else if (error.name === 'InvalidPDFException' && error.message === 'Invalid Root reference.') {
+          errorMessage = `File '${file.name}' has invalid root reference.`;
+          console.error(errorMessage);
+        } else if (error.name === 'PasswordException') {
+          errorMessage = `File '${file.name}' requires a password.`;
+          console.error(errorMessage);
+        } else {
+          errorMessage = `Error processing file: '${file.name}'`;
+          console.error(errorMessage);
+          console.error(error);
+        }
+        return {
+          numPages: 0,
+          area: 0,
+          a4Pages: 0,
+          a3Pages: 0,
+          wideFormatPages: 0,
+          error: errorMessage,
+        };
+      }
+    };
+    const setFormElementsState = (enabled) => {
+      const elements = form.querySelectorAll('input, button, select');
+      for (const element of elements) {
+        element.disabled = !enabled;
+      }
+    };
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const inputFile = document.getElementById('pdf-file');
+      if (!inputFile.files.length) {
+        alert('Select a PDF(s) to proceed.');
+        return;
+      }
+      setFormElementsState(false);
+      progressBar.style.width = '0%';
+      resultDiv.textContent = '—';
+      advancedReportButton.disabled = true;
+      const startTime = new Date().toLocaleString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }).replace(',', '').replace(/\//g, '.');
+      logData = `PDF Page Size Analyzer Log\nStart time: ${startTime}\n\n`;
+      let errorList = [];
+      let validFiles = 0;
+      let totalArea = 0;
+      let totalPages = 0;
+      let a4PagesTotal = 0;
+      let a3PagesTotal = 0;
+      let wideFormatTotal = 0;
+      for (let i = 0; i < inputFile.files.length; i++) {
+        const file = inputFile.files[i];
+        const fileInfo = await calculateArea(file);
+        if (!fileInfo.error) {
+          totalArea += fileInfo.area;
+          totalPages += fileInfo.numPages;
+          a4PagesTotal += fileInfo.a4Pages;
+          a3PagesTotal += fileInfo.a3Pages;
+          wideFormatTotal += fileInfo.wideFormatPages;
+          validFiles++;
+          logData += `File: ${file.name}\nTotal Pages: ${fileInfo.numPages}\nWide Format Pages: ${fileInfo.wideFormatPages}\nA4 Pages: ${fileInfo.a4Pages}\nA3 Pages: ${
+  fileInfo.a3Pages
+}\nArea of Wide Format Pages: ${fileInfo.area.toFixed(2)} m²\n\n`;
+        } else {
+          errorList.push({
+            file: file.name,
+            error: fileInfo.error,
+          });
+          errorCount++;
+        }
+        progressBar.style.width = `${Math.round(((i + 1) / inputFile.files.length) * 100)}%`;
+      }
+      if (errorList.length > 0) {
+        logData += `========================================\nProcessing encountered errors:\n\n`;
+        errorList.forEach((errorItem) => {
+          logData += `${errorItem.error}\n`;
+        });
+      }
+      calculationCompletedTime = new Date().toLocaleString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }).replace(',', '').replace(/\//g, '.');
+      logData += `========================================\nEnd time: ${calculationCompletedTime}\nTotal Files: ${validFiles}\nTotal Pages: ${totalPages}\nA4 Pages: ${a4PagesTotal}\nA3 Pages: ${a3PagesTotal}\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(
+        2
+      )} m²\n`;
+      resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>A4 Pages: ${a4PagesTotal}<br>A3 Pages: ${a3PagesTotal}</span>`;
+      advancedReportButton.disabled = false;
+      refreshLogWindow();
+      setFormElementsState(true);
+    });
+    const resetResult = () => {
+      progressBar.style.width = '0%';
+      resultDiv.textContent = '—';
+      advancedReportButton.disabled = true;
+      logWindow.style.display = 'none';
+    };
+    const inputFile = document.getElementById('pdf-file');
+    inputFile.addEventListener('input', () => {
+      if (inputFile.value === '' || inputFile.files.length === 0) {
+        resetResult();
+      }
+      progressBar.style.width = '0%';
+    });
+    fileType.addEventListener('change', (event) => {
+      const selectedOption = event.target.value;
+      const currentInputFile = document.getElementById('pdf-file');
+      if (selectedOption === 'files' && !currentInputFile.multiple) {
+        resetResult();
+        progressBar.style.width = '0%';
+      } else if (selectedOption === 'folder-of-files' && currentInputFile.multiple) {
+        resetResult();
+        progressBar.style.width = '0%';
+      }
+      if (selectedOption === 'files') {
+        inputContainer.innerHTML = '<input type="file" id="pdf-file" accept="application/pdf" multiple />';
+      } else if (selectedOption === 'folder-of-files') {
+        inputContainer.innerHTML = '<input type="file" id="pdf-file" accept="application/pdf" webkitdirectory />';
+      }
+      const newInputFile = document.getElementById('pdf-file');
+      newInputFile.addEventListener('input', () => {
+        if (newInputFile.value === '' || newInputFile.files.length === 0) {
+          resetResult();
+        }
+        progressBar.style.width = '0%';
+      });
+    });
+  </script>
+</body>
+
+</html>
