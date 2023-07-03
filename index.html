@@ -352,7 +352,7 @@
         minute: '2-digit',
         second: '2-digit'
       }).replace(',', '').replace(/\//g, '.');
-      logData += `========================================\nEnd time: ${calculationCompletedTime}\nTotal Files: ${validFiles}\nTotal Pages: ${totalPages}\nA4 Pages: ${a4PagesTotal}\nA3 Pages: ${a3PagesTotal}\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(
+      logData += `========================================\nEnd time: ${calculationCompletedTime}\nTotal Files: ${validFiles}\nA4 Pages: ${a4PagesTotal}\nA3 Pages: ${a3PagesTotal}\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(
         2
       )} m²\n`;
       resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>A4 Pages: ${a4PagesTotal}<br>A3 Pages: ${a3PagesTotal}</span>`;
