@@ -221,6 +221,40 @@
         logWindow.style.display = 'none';
       }
     };
+    // Function to determine if a pixel is black and white
+    const isPixelBlackAndWhite = (r, g, b) => {
+      // Check if the RGB values are close to each other, indicating a grayscale pixel
+      const tolerance = 10;
+      const maxDifference = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(b - r));
+      return maxDifference <= tolerance;
+    };
+    // Function to determine if a page is black and white or color
+    const isPageBlackAndWhite = async (page) => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      const viewport = page.getViewport({
+        scale: 1
+      });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport,
+      };
+      await page.render(renderContext).promise;
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let isBlackAndWhite = true;
+      for (let i = 0; i < imageData.length; i += 16) {
+        const r = imageData[i];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        if (!isPixelBlackAndWhite(r, g, b)) {
+          isBlackAndWhite = false;
+          break;
+        }
+      }
+      return isBlackAndWhite;
+    };
     const calculateArea = async (file) => {
       try {
         const fileArrayBuffer = await readFileAsArrayBuffer(file);
@@ -232,6 +266,10 @@
         let a4Pages = 0;
         let a3Pages = 0;
         let wideFormatPages = 0;
+        let a4BlackAndWhitePages = 0;
+        let a3BlackAndWhitePages = 0;
+        let a4ColorPages = 0;
+        let a3ColorPages = 0;
         for (let i = 1; i <= numPages; i++) {
           const page = await pdf.getPage(i);
           const viewport = page.getViewport({
@@ -241,8 +279,22 @@
           const heightInMeters = viewport.height * POINTS_TO_INCHES * INCHES_TO_METERS;
           if (isPageA4(widthInMeters, heightInMeters)) {
             a4Pages++;
+            // Check if the page is black and white or color
+            const isBW = await isPageBlackAndWhite(page);
+            if (isBW) {
+              a4BlackAndWhitePages++;
+            } else {
+              a4ColorPages++;
+            }
           } else if (isPageA3(widthInMeters, heightInMeters)) {
             a3Pages++;
+            // Check if the page is black and white or color
+            const isBW = await isPageBlackAndWhite(page);
+            if (isBW) {
+              a3BlackAndWhitePages++;
+            } else {
+              a3ColorPages++;
+            }
           } else {
             const area = widthInMeters * heightInMeters;
             totalArea += area;
@@ -256,6 +308,10 @@
           a3Pages,
           wideFormatPages,
           error: null,
+          a4BlackAndWhitePages,
+          a3BlackAndWhitePages,
+          a4ColorPages,
+          a3ColorPages,
         };
       } catch (error) {
         let errorMessage = '';
@@ -280,6 +336,10 @@
           a3Pages: 0,
           wideFormatPages: 0,
           error: errorMessage,
+          a4BlackAndWhitePages: 0,
+          a3BlackAndWhitePages: 0,
+          a4ColorPages: 0,
+          a3ColorPages: 0,
         };
       }
     };
@@ -314,7 +374,11 @@
       let totalArea = 0;
       let totalPages = 0;
       let a4PagesTotal = 0;
+      let a4BlackAndWhitePagesTotal = 0;
+      let a4ColorPagesTotal = 0;
       let a3PagesTotal = 0;
+      let a3BlackAndWhitePagesTotal = 0;
+      let a3ColorPagesTotal = 0;
       let wideFormatTotal = 0;
       for (let i = 0; i < inputFile.files.length; i++) {
         const file = inputFile.files[i];
@@ -323,12 +387,15 @@
           totalArea += fileInfo.area;
           totalPages += fileInfo.numPages;
           a4PagesTotal += fileInfo.a4Pages;
+          a4BlackAndWhitePagesTotal += fileInfo.a4BlackAndWhitePages;
+          a4ColorPagesTotal += fileInfo.a4ColorPages;
           a3PagesTotal += fileInfo.a3Pages;
+          a3BlackAndWhitePagesTotal += fileInfo.a3BlackAndWhitePages;
+          a3ColorPagesTotal += fileInfo.a3ColorPages;
           wideFormatTotal += fileInfo.wideFormatPages;
           validFiles++;
-          logData += `File: ${file.name}\nTotal Pages: ${fileInfo.numPages}\nWide Format Pages: ${fileInfo.wideFormatPages}\nA4 Pages: ${fileInfo.a4Pages}\nA3 Pages: ${
-  fileInfo.a3Pages
-}\nArea of Wide Format Pages: ${fileInfo.area.toFixed(2)} m²\n\n`;
+          logData += `File: ${file.name}\nTotal Pages: ${fileInfo.numPages}\nWide Format Pages: ${fileInfo.wideFormatPages}\nA4 Black and White Pages: ${fileInfo.a4BlackAndWhitePages}\nA4 Color Pages: ${fileInfo.a4ColorPages}\nA3 Pages: ${
+        fileInfo.a3Pages}\nA3 Black and White Pages: ${fileInfo.a3BlackAndWhitePages}\nA3 Color Pages: ${fileInfo.a3ColorPages}\nArea of Wide Format Pages: ${fileInfo.area.toFixed(2)} m²\n\n`;
         } else {
           errorList.push({
             file: file.name,
@@ -352,10 +419,8 @@
         minute: '2-digit',
         second: '2-digit'
       }).replace(',', '').replace(/\//g, '.');
-      logData += `========================================\nEnd time: ${calculationCompletedTime}\nTotal Files: ${validFiles}\nA4 Pages: ${a4PagesTotal}\nA3 Pages: ${a3PagesTotal}\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(
-        2
-      )} m²\n`;
-      resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>A4 Pages: ${a4PagesTotal}<br>A3 Pages: ${a3PagesTotal}</span>`;
+      logData += `========================================\nEnd time: ${calculationCompletedTime}\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n`;
+      resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>–<br>A4 Pages: ${a4PagesTotal}<br>A4 BW Pages: ${a4BlackAndWhitePagesTotal}<br>A4 Color Pages: ${a4ColorPagesTotal}<br>–<br>A3 Pages: ${a3PagesTotal}<br>A3 BW Pages: ${a3BlackAndWhitePagesTotal}<br>A3 Color Pages: ${a3ColorPagesTotal}</span>`;
       advancedReportButton.disabled = false;
       refreshLogWindow();
       setFormElementsState(true);
