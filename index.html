@@ -153,7 +153,7 @@
       <p>Made with ❤️ by Martin Kirekchiev © 2023</p>
     </div>
   </div>
-  <div id="log-window" style="display: none; position: absolute; top: 20px; right: 20px; width: 30%; height: 50%; z-index: 1000; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em;">
+  <div id="log-window" style="display: none; position: absolute; top: 20px; right: 20px; width: 30%; height: 50%; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em;">
     <pre id="log-content">
 </pre>
   </div>
@@ -203,6 +203,10 @@
       if (logWindow.style.display === 'none') {
         logContent.textContent = logData;
         logWindow.style.display = 'block';
+        logContent.scrollIntoView({
+          block: 'start',
+          behavior: 'instant'
+        });
       } else {
         logWindow.style.display = 'none';
       }
@@ -211,6 +215,10 @@
       if (logWindow.style.display === 'block') {
         logContent.textContent = logData;
         logWindow.style.display = 'block';
+        logContent.scrollIntoView({
+          block: 'start',
+          behavior: 'instant'
+        });
       } else {
         logWindow.style.display = 'none';
       }
@@ -368,7 +376,8 @@
         minute: '2-digit',
         second: '2-digit'
       }).replace(',', '').replace(/\//g, '.');
-      logData = `PDF Page Size Analyzer Log\nStart time: ${startTime}\n\n`;
+      const startTime2 = performance.now();
+      logData = `\n\nPDF Page Size Analyzer Log\nStart time: ${startTime}\n\n`;
       let errorList = [];
       let validFiles = 0;
       let totalArea = 0;
@@ -419,7 +428,9 @@
         minute: '2-digit',
         second: '2-digit'
       }).replace(',', '').replace(/\//g, '.');
-      logData += `========================================\nEnd time: ${calculationCompletedTime}\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n`;
+      const endTime = performance.now();
+      const runningTime = (endTime - startTime2) / 1000;
+      logData += `========================================\nEnd time: ${calculationCompletedTime}\nRunning time: ${runningTime.toFixed(2)} seconds\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n\n`;
       resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>–<br>A4 Pages: ${a4PagesTotal}<br>A4 BW Pages: ${a4BlackAndWhitePagesTotal}<br>A4 Color Pages: ${a4ColorPagesTotal}<br>–<br>A3 Pages: ${a3PagesTotal}<br>A3 BW Pages: ${a3BlackAndWhitePagesTotal}<br>A3 Color Pages: ${a3ColorPagesTotal}</span>`;
       advancedReportButton.disabled = false;
       refreshLogWindow();
