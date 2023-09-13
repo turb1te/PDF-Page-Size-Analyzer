@@ -3,12 +3,15 @@
 
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHHCJY3543"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHHCJY3543">
+  </script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
 
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
     gtag('config', 'G-LHHCJY3543');
   </script>
   <title>PDF Page Size Analyzer</title>
@@ -137,10 +140,112 @@
       height: 100%;
       width: 0;
     }
+
+    #pdf-sizes-report {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      color: #333;
+    }
+
+    #pdf-sizes-table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #333;
+    }
+
+    #pdf-sizes-table th,
+    #pdf-sizes-table td {
+      padding: 3px;
+      margin: 0;
+      /* Reset margin for the table */
+      text-align: center;
+      border: 1px solid #ddd;
+      color: #333;
+    }
+
+    #pdf-sizes-inner-container {
+      /* Apply padding to the inner container */
+      padding: 1em;
+    }
+
+    #pdf-sizes-container {
+      position: absolute;
+      text-align: center;
+      width: 30%;
+      height: 50%;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102);
+      overflow: auto;
+      border-radius: 4px;
+      color: #333;
+    }
+
+    #pdf-sizes-table td:nth-child(2) {
+      /* Apply styles to the second column (File column) */
+      max-width: 100px;
+      /* Set a fixed maximum width for the column */
+      white-space: nowrap;
+      /* Prevent text from wrapping */
+      overflow: hidden;
+      /* Hide overflowing text */
+      text-overflow: ellipsis;
+      /* Display an ellipsis (...) when text overflows */
+    }
+
+    #pdf-sizes-table th:nth-child(2) {
+      /* Apply styles to the second column (File column) */
+      max-width: 100px;
+      /* Set a fixed maximum width for the column */
+      white-space: nowrap;
+      /* Prevent text from wrapping */
+      overflow: hidden;
+      /* Hide overflowing text */
+      text-overflow: ellipsis;
+      /* Display an ellipsis (...) when text overflows */
+    }
+
+    #pdf-sizes-table td:nth-child(3) {
+      max-width: 45px;
+      /* Adjust the width as needed */
+    }
+
+    #pdf-sizes-table th:nth-child(3) {
+      max-width: 45px;
+      /* Adjust the width as needed */
+    }
+
+    #pdf-sizes-table td:nth-child(1) {
+      max-width: 12px;
+      /* Adjust the width as needed */
+      text-align: center;
+    }
+
+    #pdf-sizes-table th:nth-child(1) {
+      max-width: 12px;
+      /* Adjust the width as needed */
+      text-align: center;
+    }
   </style>
 </head>
 
 <body>
+  <div id="pdf-sizes-container" style="display: none;">
+    <h2>PDF Page Sizes</h2>
+    <div class="scrolling-window">
+      <div id="pdf-sizes-inner-container">
+        <!-- New inner container -->
+        <table id="pdf-sizes-table">
+          <tr>
+            <th>№</th>
+            <th>File</th>
+            <th>Size (in mm)</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <h1>PDF Page Size Analyzer</h1>
     <form id="form">
@@ -148,6 +253,7 @@
           <option value="files" selected>Select PDF file(s)</option>
           <option value="folder-of-files">Select a folder of PDF file(s)</option>
         </select> </div> <span id="input-container"> <input type="file" id="pdf-file" accept="application/pdf" multiple /> </span> <button type="submit" class="calculate-button">Calculate</button> <button type="button" id="advanced-report" onclick="toggleLogWindow()" disabled>Advanced Report</button>
+      <button type="button" id="display-sizes-button" onclick="displaySizes()">Display All Page Sizes</button>
       <div class="result-section">
         <h2>Total PDF Metrics:</h2>
         <p id="result">
@@ -272,6 +378,123 @@
       }
       return isBlackAndWhite;
     };
+    // Define a global object to store calculated sizes
+    const fileSizesCache = {};
+    // Add an event listener to the file input element
+    const pdfFileInput = document.getElementById('pdf-file');
+    const displaySizesButton = document.getElementById('display-sizes-button');
+    pdfFileInput.addEventListener('change', () => {
+      // Check if any files are selected
+      if (pdfFileInput.files.length > 0) {
+        // Enable the "Only display sizes" button
+        displaySizesButton.disabled = false;
+      } else {
+        // Disable the "Only display sizes" button
+        displaySizesButton.disabled = true;
+      }
+    });
+    // Function to display sizes
+    const displaySizes = async () => {
+      const inputFile = document.getElementById('pdf-file');
+      const table = document.getElementById('pdf-sizes-table');
+      const container = document.getElementById('pdf-sizes-container');
+      // Get the selected files
+      const selectedFiles = inputFile.files;
+      // Toggle the visibility of the container
+      if (container.style.display === 'none' || container.style.display === '') {
+        container.style.display = 'block';
+      } else {
+        container.style.display = 'none';
+      }
+      // If the container is visible, populate the table with PDF sizes
+      if (container.style.display !== 'none') {
+        // Clear the table content while keeping the header row
+        while (table.rows.length > 1) {
+          table.deleteRow(1);
+        }
+        let fileNumberingCounter = 1; // Initialize the file numbering counter
+        let totalPageCounter = 1; // Initialize the total page counter
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const file = selectedFiles[i];
+          // Check if sizes are already calculated for this file
+          if (fileSizesCache[file.name]) {
+            const fileInfo = fileSizesCache[file.name];
+            const totalPages = fileInfo.totalPages;
+            for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+              const pageSizes = fileInfo.pageSizes[pageIndex];
+              addRowToTable(table, fileNumberingCounter, pageSizes.fileLabel, pageSizes.pageLabel, file.name, pageSizes.widthInMm, pageSizes.heightInMm);
+              totalPageCounter++;
+            }
+          } else {
+            // Read the file as an ArrayBuffer
+            const fileArrayBuffer = await readFileAsArrayBuffer(file);
+            const pdf = await pdfjsLib.getDocument({
+              data: fileArrayBuffer
+            }).promise;
+            const totalPages = pdf.numPages;
+            const pageSizesArray = [];
+            for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+              const page = await pdf.getPage(pageIndex + 1);
+              const viewport = page.getViewport({
+                scale: 1
+              });
+              const widthInMm = ((viewport.width * 25.4) / 72).toFixed(2);
+              const heightInMm = ((viewport.height * 25.4) / 72).toFixed(2);
+              const fileLabel = `${fileNumberingCounter}`.padStart(3, '0'); // Format as 001, 002, etc.
+              const pageLabel = `${pageIndex + 1}`.padStart(2, '0'); // Format as 01, 02, etc.
+              pageSizesArray.push({
+                fileLabel,
+                pageLabel,
+                widthInMm,
+                heightInMm
+              });
+              addRowToTable(table, fileNumberingCounter, fileLabel, pageLabel, file.name, widthInMm, heightInMm);
+              totalPageCounter++;
+            }
+            // Store the calculated sizes in the cache
+            fileSizesCache[file.name] = {
+              totalPages,
+              pageSizes: pageSizesArray
+            };
+          }
+          // Increment the file numbering counter
+          fileNumberingCounter++;
+        }
+        // Scroll the container to the beginning
+        container.scrollTop = 0;
+        container.scrollLeft = 0;
+      }
+    };
+    // Initial check for the "Only display sizes" button on page load
+    if (pdfFileInput.files.length === 0) {
+      displaySizesButton.disabled = true;
+    }
+    // Function to add a row to the table
+    function addRowToTable(table, fileNumber, fileLabel, pageLabel, fileName, width, height) {
+      const newRow = table.insertRow(-1);
+      const numberCell = newRow.insertCell(0);
+      numberCell.textContent = `${fileNumber}.${pageLabel}`;
+      const fileNameCell = newRow.insertCell(1);
+      const sizeCell = newRow.insertCell(2);
+      fileNameCell.textContent = fileName;
+      sizeCell.textContent = `${width} x ${height}`;
+    }
+    const calculateSizes = async (file) => {
+      const fileArrayBuffer = await readFileAsArrayBuffer(file);
+      const pdf = await pdfjsLib.getDocument({
+        data: fileArrayBuffer
+      }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({
+        scale: 1
+      });
+      const widthInMm = ((viewport.width * 25.4) / 72).toFixed(2);
+      const heightInMm = ((viewport.height * 25.4) / 72).toFixed(2);
+      return {
+        width: widthInMm,
+        height: heightInMm
+      };
+    };
     const calculateArea = async (file) => {
       try {
         const fileArrayBuffer = await readFileAsArrayBuffer(file);
@@ -377,6 +600,7 @@
       progressBar.style.width = '0%';
       resultDiv.textContent = '—';
       advancedReportButton.disabled = true;
+      displaySizesButton.disabled = true;
       const startTime = new Date().toLocaleString('en-US', {
         day: '2-digit',
         month: '2-digit',
@@ -443,13 +667,27 @@
       resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>–<br>A4 Pages: ${a4PagesTotal}<br>A4 BW Pages: ${a4BlackAndWhitePagesTotal}<br>A4 Color Pages: ${a4ColorPagesTotal}<br>–<br>A3 Pages: ${a3PagesTotal}<br>A3 BW Pages: ${a3BlackAndWhitePagesTotal}<br>A3 Color Pages: ${a3ColorPagesTotal}</span>`;
       advancedReportButton.disabled = false;
       refreshLogWindow();
+      if (container.style.display === 'block') {
+        container.style.display = 'none';
+      } else {
+        container.style.display = 'none';
+      }
+      displaySizes();
+      if (container.style.display === 'none' || container.style.display === '') {
+        container.style.display = 'block';
+      } else {
+        container.style.display = 'block';
+      }
       setFormElementsState(true);
     });
+    const container = document.getElementById('pdf-sizes-container');
     const resetResult = () => {
       progressBar.style.width = '0%';
       resultDiv.textContent = '—';
       advancedReportButton.disabled = true;
+      displaySizesButton.disabled = true;
       logWindow.style.display = 'none';
+      container.style.display = 'none';
     };
     const inputFile = document.getElementById('pdf-file');
     inputFile.addEventListener('input', () => {
