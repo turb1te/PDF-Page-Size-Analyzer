@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHHCJY3543">
   </script>
@@ -21,19 +22,13 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.js';
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="data:image/png;base64,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">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 20px;
       background-color: #f5f5f5;
-    }
-
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 20px;
     }
 
     .container {
@@ -45,15 +40,22 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    h1,
     label {
-      display: block;
-      margin-bottom: 5px;
       color: #333;
-      font-weight: bold;
     }
 
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label,
     .input-group {
-      margin-bottom: 10px;
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
     }
 
     select,
@@ -68,7 +70,7 @@
       font-size: 14px;
       margin-bottom: 10px;
       box-sizing: border-box;
-      transition: border-color 0.3s ease;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
     }
 
     select:focus,
@@ -78,8 +80,8 @@
       border-color: #2196F3;
     }
 
-    /* Input File Styles */
     input[type="file"]::-webkit-file-upload-button {
+      font-family: 'Roboto', sans-serif;
       color: #333;
     }
 
@@ -105,16 +107,16 @@
     }
 
     .calculate-button {
-      width: 100%;
-      background-color: #967BB6;
+      background-color: #9f7df6;
       color: #fff;
       font-weight: bold;
       cursor: pointer;
+      font-size: 15px;
       transition: background-color 0.3s ease;
     }
 
     .calculate-button:hover {
-      background-color: #84619C;
+      background-color: #b195f8;
     }
 
     .credits {
@@ -128,9 +130,13 @@
     .credits p {
       margin: 0;
       color: #333;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: bold;
       text-align: center;
+    }
+
+    .credits:hover {
+      background-color: #f5f5f5;
     }
 
     .progress-bar {
@@ -141,7 +147,7 @@
     }
 
     .progress-bar-inner {
-      background-color: #d1d1f6;
+      background-color: #9f7df6;
       height: 100%;
       width: 0;
     }
@@ -164,14 +170,12 @@
     #pdf-sizes-table td {
       padding: 3px;
       margin: 0;
-      /* Reset margin for the table */
       text-align: center;
       border: 1px solid #ddd;
       color: #333;
     }
 
     #pdf-sizes-inner-container {
-      /* Apply padding to the inner container */
       padding: 1em;
     }
 
@@ -187,50 +191,27 @@
       color: #333;
     }
 
-    #pdf-sizes-table td:nth-child(2) {
-      /* Apply styles to the second column (File column) */
-      max-width: 100px;
-      /* Set a fixed maximum width for the column */
-      white-space: nowrap;
-      /* Prevent text from wrapping */
-      overflow: hidden;
-      /* Hide overflowing text */
-      text-overflow: ellipsis;
-      /* Display an ellipsis (...) when text overflows */
-    }
-
+    #pdf-sizes-table td:nth-child(2),
     #pdf-sizes-table th:nth-child(2) {
-      /* Apply styles to the second column (File column) */
       max-width: 100px;
-      /* Set a fixed maximum width for the column */
       white-space: nowrap;
-      /* Prevent text from wrapping */
       overflow: hidden;
-      /* Hide overflowing text */
       text-overflow: ellipsis;
-      /* Display an ellipsis (...) when text overflows */
     }
 
-    #pdf-sizes-table td:nth-child(3) {
-      max-width: 45px;
-      /* Adjust the width as needed */
-    }
-
+    #pdf-sizes-table td:nth-child(3),
     #pdf-sizes-table th:nth-child(3) {
       max-width: 45px;
-      /* Adjust the width as needed */
     }
 
-    #pdf-sizes-table td:nth-child(1) {
-      max-width: 12px;
-      /* Adjust the width as needed */
-      text-align: center;
-    }
-
+    #pdf-sizes-table td:nth-child(1),
     #pdf-sizes-table th:nth-child(1) {
       max-width: 12px;
-      /* Adjust the width as needed */
       text-align: center;
+    }
+
+    button:hover {
+      background-color: #f5f5f5;
     }
   </style>
 </head>
@@ -270,7 +251,9 @@
       </div>
     </form>
     <div class="credits">
-      <p>Made with ❤️ by Martin Kirekchiev © 2023</p>
+      <p>Made with ❤️ by Martin Kirekchiev</p>
+      <hr> <!-- Divider -->
+      <p> Last Updated: 27 September 2023 <br> PDF.js Version: 3.11.174 </p>
     </div>
   </div>
   <div id="log-window" style="display: none; position: absolute; top: 20px; right: 20px; width: 30%; height: 50%; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em;">
