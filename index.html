@@ -490,6 +490,9 @@
           data: fileArrayBuffer
         }).promise;
         const numPages = pdf.numPages;
+        const pages = await Promise.all(Array.from({
+          length: numPages
+        }, (_, i) => pdf.getPage(i + 1)));
         let totalArea = 0;
         let a4Pages = 0;
         let a3Pages = 0;
@@ -498,37 +501,38 @@
         let a3BlackAndWhitePages = 0;
         let a4ColorPages = 0;
         let a3ColorPages = 0;
-        for (let i = 1; i <= numPages; i++) {
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({
-            scale: 1
-          });
-          const widthInMeters = viewport.width * POINTS_TO_INCHES * INCHES_TO_METERS;
-          const heightInMeters = viewport.height * POINTS_TO_INCHES * INCHES_TO_METERS;
-          if (isPageA4(widthInMeters, heightInMeters)) {
-            a4Pages++;
-            // Check if the page is black and white or color
-            const isBW = await isPageBlackAndWhite(page);
-            if (isBW) {
-              a4BlackAndWhitePages++;
+        // Function to process pages in parallel and return an array of results
+        const processPages = async () => {
+          const results = await Promise.all(pages.map(async (page) => {
+            const viewport = page.getViewport({
+              scale: 1
+            });
+            const widthInMeters = viewport.width * POINTS_TO_INCHES * INCHES_TO_METERS;
+            const heightInMeters = viewport.height * POINTS_TO_INCHES * INCHES_TO_METERS;
+            if (isPageA4(widthInMeters, heightInMeters)) {
+              a4Pages++;
+              if (await isPageBlackAndWhite(page)) {
+                a4BlackAndWhitePages++;
+              } else {
+                a4ColorPages++;
+              }
+            } else if (isPageA3(widthInMeters, heightInMeters)) {
+              a3Pages++;
+              if (await isPageBlackAndWhite(page)) {
+                a3BlackAndWhitePages++;
+              } else {
+                a3ColorPages++;
+              }
             } else {
-              a4ColorPages++;
+              const area = widthInMeters * heightInMeters;
+              totalArea += area;
+              wideFormatPages++;
             }
-          } else if (isPageA3(widthInMeters, heightInMeters)) {
-            a3Pages++;
-            // Check if the page is black and white or color
-            const isBW = await isPageBlackAndWhite(page);
-            if (isBW) {
-              a3BlackAndWhitePages++;
-            } else {
-              a3ColorPages++;
-            }
-          } else {
-            const area = widthInMeters * heightInMeters;
-            totalArea += area;
-            wideFormatPages++;
-          }
-        }
+          }));
+          return results;
+        };
+        // Parallel processing of pages
+        await processPages();
         return {
           numPages,
           area: totalArea,
@@ -542,21 +546,19 @@
           a3ColorPages,
         };
       } catch (error) {
+        // Handle errors as needed
         let errorMessage = '';
         if (error.name === 'InvalidPDFException' && error.message === 'The PDF file is empty, i.e. its size is zero bytes.') {
           errorMessage = `File '${file.name}' is empty and cannot be opened.`;
-          console.error(errorMessage);
         } else if (error.name === 'InvalidPDFException' && error.message === 'Invalid Root reference.') {
-          errorMessage = `File '${file.name}' has invalid root reference.`;
-          console.error(errorMessage);
+          errorMessage = `File '${file.name}' has an invalid root reference.`;
         } else if (error.name === 'PasswordException') {
           errorMessage = `File '${file.name}' requires a password.`;
-          console.error(errorMessage);
         } else {
           errorMessage = `Error processing file: '${file.name}'`;
-          console.error(errorMessage);
-          console.error(error);
         }
+        console.error(errorMessage);
+        console.error(error);
         return {
           numPages: 0,
           area: 0,
