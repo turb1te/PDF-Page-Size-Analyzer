@@ -342,7 +342,7 @@
     document.getElementById('skipColorBlackAndWhiteCalculationDropdown').addEventListener('change', handleSkipColorBlackAndWhiteCalculationChange);
     const resetToDefaults = () => {
       processingMode = 'parallel';
-      skipColorBlackAndWhiteCalculation = false;
+      skipColorBlackAndWhiteCalculation = true;
       saveSettings();
       applySettingsToUI();
     };
