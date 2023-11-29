@@ -125,6 +125,7 @@
       padding: 10px;
       margin-top: 20px;
       position: relative;
+      z-index: 1;
     }
 
     .credits p {
@@ -189,6 +190,7 @@
       overflow: auto;
       border-radius: 4px;
       color: #333;
+      z-index: 2;
     }
 
     #pdf-sizes-table td:nth-child(2),
@@ -213,6 +215,16 @@
     button:hover {
       background-color: #f5f5f5;
     }
+
+    #settings-window {
+      z-index: 3;
+    }
+
+    #settings-window h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
   </style>
 </head>
 
@@ -221,7 +233,6 @@
     <h2>PDF Page Sizes</h2>
     <div class="scrolling-window">
       <div id="pdf-sizes-inner-container">
-        <!-- New inner container -->
         <table id="pdf-sizes-table">
           <tr>
             <th>№</th>
@@ -238,8 +249,27 @@
       <div class="input-group"> <label for="file-type">Choose an option:</label> <select id="file-type">
           <option value="files" selected>Select PDF file(s)</option>
           <option value="folder-of-files">Select a folder of PDF file(s)</option>
-        </select> </div> <span id="input-container"> <input type="file" id="pdf-file" accept="application/pdf" multiple /> </span> <button type="submit" class="calculate-button">Calculate</button> <button type="button" id="advanced-report" onclick="toggleLogWindow()" disabled>Advanced Report</button>
-      <button type="button" id="display-sizes-button" onclick="displaySizes()">Display All Page Sizes</button>
+        </select> </div> <span id="input-container"> <input type="file" id="pdf-file" accept="application/pdf" multiple /> </span> <button type="submit" class="calculate-button">CALCULATE</button>
+      <button type="button" id="display-sizes-button" onclick="displaySizes()">DISPLAY PAGE SIZES</button>
+      <button type="button" id="advanced-report" onclick="toggleLogWindow()" disabled>ADVANCED REPORT</button>
+      <button type="button" id="settings-button" onclick="toggleSettings()">SETTINGS</button>
+      <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2;">
+      </div>
+      <div id="settings-window" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 500px; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em; margin: 0px;">
+        <button type="button" onclick="toggleSettings()" style="position: absolute; top: 10px; right: 10px; background-color: #ddd; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0;"> X </button>
+        <h2 style="margin-bottom: 20px;">SETTINGS</h2>
+        <label for="processingModeDropdown" style="margin-bottom: 10px;">Processing Mode:</label>
+        <select id="processingModeDropdown" style="width: 100%; margin-bottom: 10px;">
+          <option value="parallel">Parallel Processing</option>
+          <option value="sequential">Sequential Processing</option>
+        </select>
+        <label for="skipColorBlackAndWhiteCalculationDropdown" style="margin-bottom: 10px;">Color Page Detection:</label>
+        <select id="skipColorBlackAndWhiteCalculationDropdown" style="width: 100%; margin-bottom: 10px;">
+          <option value="false">Enable</option>
+          <option value="true">Disable</option>
+        </select>
+        <button type="button" id="reset-to-defaults-button" onclick="resetToDefaults()" style="width: 100%; margin-top: 10px;">Reset to Defaults</button>
+      </div>
       <div class="result-section">
         <h2>Total PDF Metrics:</h2>
         <p id="result">
@@ -252,8 +282,8 @@
     </form>
     <div class="credits">
       <p>Made with ❤️ by Martin Kirekchiev</p>
-      <hr> <!-- Divider -->
-      <p> Last Updated: 04 October 2023 <br> PDF.js Version: 3.11.174 </p>
+      <hr>
+      <p> Last Updated: 30 November 2023 <br> PDF.js Version: 3.11.174 </p>
     </div>
   </div>
   <div id="log-window" style="display: none; position: absolute; top: 20px; right: 20px; width: 30%; height: 50%; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em;">
@@ -261,6 +291,62 @@
 </pre>
   </div>
   <script>
+    let processingMode = 'parallel';
+    let skipColorBlackAndWhiteCalculation = true;
+    const toggleSettings = () => {
+      const settingsWindow = document.getElementById('settings-window');
+      const overlay = document.getElementById('overlay');
+      if (settingsWindow.style.display === 'none') {
+        settingsWindow.style.display = 'block';
+        overlay.style.display = 'block';
+      } else {
+        settingsWindow.style.display = 'none';
+        overlay.style.display = 'none';
+      }
+    };
+    const settingsChangeHandler = () => {
+      saveSettings();
+    };
+    window.addEventListener('load', () => {
+      loadSettings();
+      applySettingsToUI();
+    });
+    const saveSettings = () => {
+      const settings = {
+        processingMode: processingMode,
+        skipColorBlackAndWhiteCalculation: skipColorBlackAndWhiteCalculation
+      };
+      localStorage.setItem('pdfAnalyzerSettings', JSON.stringify(settings));
+    };
+    const loadSettings = () => {
+      const storedSettings = localStorage.getItem('pdfAnalyzerSettings');
+      if (storedSettings) {
+        const settings = JSON.parse(storedSettings);
+        processingMode = settings.processingMode;
+        skipColorBlackAndWhiteCalculation = settings.skipColorBlackAndWhiteCalculation;
+      }
+    };
+    const applySettingsToUI = () => {
+      document.getElementById('processingModeDropdown').value = processingMode;
+      document.getElementById('skipColorBlackAndWhiteCalculationDropdown').value = skipColorBlackAndWhiteCalculation.toString();
+    };
+    const toggleProcessingMode = () => {
+      processingMode = document.getElementById('processingModeDropdown').value;
+      settingsChangeHandler();
+    };
+    document.getElementById('processingModeDropdown').addEventListener('change', toggleProcessingMode);
+    const handleSkipColorBlackAndWhiteCalculationChange = () => {
+      skipColorBlackAndWhiteCalculation = document.getElementById('skipColorBlackAndWhiteCalculationDropdown').value === 'true';
+      settingsChangeHandler();
+    };
+    document.getElementById('skipColorBlackAndWhiteCalculationDropdown').addEventListener('change', handleSkipColorBlackAndWhiteCalculationChange);
+    const resetToDefaults = () => {
+      processingMode = 'parallel';
+      skipColorBlackAndWhiteCalculation = false;
+      saveSettings();
+      applySettingsToUI();
+    };
+    document.getElementById('reset-to-defaults-button').addEventListener('click', resetToDefaults);
     const form = document.getElementById('form');
     const inputContainer = document.getElementById('input-container');
     const resultDiv = document.getElementById('result');
@@ -272,16 +358,40 @@
     resultDiv.textContent = '—';
     progressBar.style.width = '0%';
     let errorCount = 0;
-    const readFileAsArrayBuffer = (file) => {
+    const readFileInChunks = async (file, chunkSize = 1024 * 1024) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (event) => {
-          resolve(event.target.result);
+        const chunks = [];
+        let offset = 0;
+        reader.onload = async (event) => {
+          const chunk = new Uint8Array(event.target.result);
+          chunks.push(chunk);
+          if (offset < file.size) {
+            await readNextChunk();
+          } else {
+            const concatenatedArrayBuffer = concatenateChunks(chunks);
+            resolve(concatenatedArrayBuffer);
+          }
         };
         reader.onerror = (error) => {
           reject(error);
         };
-        reader.readAsArrayBuffer(file);
+        const readNextChunk = () => {
+          const chunk = file.slice(offset, offset + chunkSize);
+          reader.readAsArrayBuffer(chunk);
+          offset += chunkSize;
+        };
+        const concatenateChunks = (chunks) => {
+          const totalSize = chunks.reduce((acc, chunk) => acc + chunk.byteLength, 0);
+          const result = new Uint8Array(totalSize);
+          let offset = 0;
+          for (const chunk of chunks) {
+            result.set(chunk, offset);
+            offset += chunk.byteLength;
+          }
+          return result.buffer;
+        };
+        readNextChunk();
       });
     };
     const POINTS_TO_INCHES = 1 / 72;
@@ -332,14 +442,11 @@
         logWindow.style.display = 'none';
       }
     };
-    // Function to determine if a pixel is black and white
     const isPixelBlackAndWhite = (r, g, b) => {
-      // Check if the RGB values are close to each other, indicating a grayscale pixel
       const tolerance = 10;
       const maxDifference = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(b - r));
       return maxDifference <= tolerance;
     };
-    // Function to determine if a page is black and white or color
     const isPageBlackAndWhite = async (page) => {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
@@ -365,46 +472,36 @@
         }
       }
       return isBlackAndWhite;
+      imageData = null;
     };
-    // Define a global object to store calculated sizes
     const fileSizesCache = {};
-    // Add an event listener to the file input element
     const pdfFileInput = document.getElementById('pdf-file');
     const displaySizesButton = document.getElementById('display-sizes-button');
     pdfFileInput.addEventListener('change', () => {
-      // Check if any files are selected
       if (pdfFileInput.files.length > 0) {
-        // Enable the "Only display sizes" button
         displaySizesButton.disabled = false;
       } else {
-        // Disable the "Only display sizes" button
         displaySizesButton.disabled = true;
       }
     });
-    // Function to display sizes
     const displaySizes = async () => {
       const inputFile = document.getElementById('pdf-file');
       const table = document.getElementById('pdf-sizes-table');
       const container = document.getElementById('pdf-sizes-container');
-      // Get the selected files
       const selectedFiles = inputFile.files;
-      // Toggle the visibility of the container
       if (container.style.display === 'none' || container.style.display === '') {
         container.style.display = 'block';
       } else {
         container.style.display = 'none';
       }
-      // If the container is visible, populate the table with PDF sizes
       if (container.style.display !== 'none') {
-        // Clear the table content while keeping the header row
         while (table.rows.length > 1) {
           table.deleteRow(1);
         }
-        let fileNumberingCounter = 1; // Initialize the file numbering counter
-        let totalPageCounter = 1; // Initialize the total page counter
+        let fileNumberingCounter = 1;
+        let totalPageCounter = 1;
         for (let i = 0; i < selectedFiles.length; i++) {
           const file = selectedFiles[i];
-          // Check if sizes are already calculated for this file
           if (fileSizesCache[file.name]) {
             const fileInfo = fileSizesCache[file.name];
             const totalPages = fileInfo.totalPages;
@@ -414,8 +511,7 @@
               totalPageCounter++;
             }
           } else {
-            // Read the file as an ArrayBuffer
-            const fileArrayBuffer = await readFileAsArrayBuffer(file);
+            const fileArrayBuffer = await readFileInChunks(file);
             const pdf = await pdfjsLib.getDocument({
               data: fileArrayBuffer
             }).promise;
@@ -439,25 +535,21 @@
               addRowToTable(table, fileNumberingCounter, fileLabel, pageLabel, file.name, widthInMm, heightInMm);
               totalPageCounter++;
             }
-            // Store the calculated sizes in the cache
             fileSizesCache[file.name] = {
               totalPages,
               pageSizes: pageSizesArray
             };
           }
-          // Increment the file numbering counter
           fileNumberingCounter++;
         }
-        // Scroll the container to the beginning
         container.scrollTop = 0;
         container.scrollLeft = 0;
       }
     };
-    // Initial check for the "Only display sizes" button on page load
     if (pdfFileInput.files.length === 0) {
       displaySizesButton.disabled = true;
     }
-    // Function to add a row to the table
+
     function addRowToTable(table, fileNumber, fileLabel, pageLabel, fileName, width, height) {
       const newRow = table.insertRow(-1);
       const numberCell = newRow.insertCell(0);
@@ -468,7 +560,7 @@
       sizeCell.textContent = `${width} x ${height}`;
     }
     const calculateSizes = async (file) => {
-      const fileArrayBuffer = await readFileAsArrayBuffer(file);
+      const fileArrayBuffer = await readFileInChunks(file);
       const pdf = await pdfjsLib.getDocument({
         data: fileArrayBuffer
       }).promise;
@@ -485,7 +577,7 @@
     };
     const calculateArea = async (file) => {
       try {
-        const fileArrayBuffer = await readFileAsArrayBuffer(file);
+        const fileArrayBuffer = await readFileInChunks(file);
         const pdf = await pdfjsLib.getDocument({
           data: fileArrayBuffer
         }).promise;
@@ -501,14 +593,26 @@
         let a3BlackAndWhitePages = 0;
         let a4ColorPages = 0;
         let a3ColorPages = 0;
-        // Function to process pages in parallel and return an array of results
-        const processPages = async () => {
+        const processPagesSequentially = async () => {
+          const results = [];
+          for (const page of pages) {
+            await processPage(page);
+          }
+          return results;
+        };
+        const processPagesInParallel = async () => {
           const results = await Promise.all(pages.map(async (page) => {
-            const viewport = page.getViewport({
-              scale: 1
-            });
-            const widthInMeters = viewport.width * POINTS_TO_INCHES * INCHES_TO_METERS;
-            const heightInMeters = viewport.height * POINTS_TO_INCHES * INCHES_TO_METERS;
+            return processPage(page);
+          }));
+          return results;
+        };
+        const processPage = async (page) => {
+          const viewport = page.getViewport({
+            scale: 1
+          });
+          const widthInMeters = viewport.width * POINTS_TO_INCHES * INCHES_TO_METERS;
+          const heightInMeters = viewport.height * POINTS_TO_INCHES * INCHES_TO_METERS;
+          if (!skipColorBlackAndWhiteCalculation) {
             if (isPageA4(widthInMeters, heightInMeters)) {
               a4Pages++;
               if (await isPageBlackAndWhite(page)) {
@@ -528,11 +632,23 @@
               totalArea += area;
               wideFormatPages++;
             }
-          }));
-          return results;
+          } else {
+            if (isPageA4(widthInMeters, heightInMeters)) {
+              a4Pages++;
+            } else if (isPageA3(widthInMeters, heightInMeters)) {
+              a3Pages++;
+            } else {
+              const area = widthInMeters * heightInMeters;
+              totalArea += area;
+              wideFormatPages++;
+            }
+          }
         };
-        // Parallel processing of pages
-        await processPages();
+        if (processingMode === 'parallel') {
+          await processPagesInParallel();
+        } else {
+          await processPagesSequentially();
+        }
         return {
           numPages,
           area: totalArea,
@@ -546,7 +662,6 @@
           a3ColorPages,
         };
       } catch (error) {
-        // Handle errors as needed
         let errorMessage = '';
         if (error.name === 'InvalidPDFException' && error.message === 'The PDF file is empty, i.e. its size is zero bytes.') {
           errorMessage = `File '${file.name}' is empty and cannot be opened.`;
@@ -591,6 +706,8 @@
       resultDiv.textContent = '—';
       advancedReportButton.disabled = true;
       displaySizesButton.disabled = true;
+      console.log(`Processing Mode: ${processingMode}`);
+      console.log(`skipColorBlackAndWhiteCalculation: ${skipColorBlackAndWhiteCalculation}`);
       const startTime = new Date().toLocaleString('en-US', {
         day: '2-digit',
         month: '2-digit',
@@ -653,8 +770,13 @@
       }).replace(',', '').replace(/\//g, '.');
       const endTime = performance.now();
       const runningTime = (endTime - startTime2) / 1000;
-      logData += `========================================\nEnd time: ${calculationCompletedTime}\nRunning time: ${runningTime.toFixed(2)} seconds\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n\n`;
-      resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>–<br>A4 Pages: ${a4PagesTotal}<br>A4 BW Pages: ${a4BlackAndWhitePagesTotal}<br>A4 Color Pages: ${a4ColorPagesTotal}<br>–<br>A3 Pages: ${a3PagesTotal}<br>A3 BW Pages: ${a3BlackAndWhitePagesTotal}<br>A3 Color Pages: ${a3ColorPagesTotal}</span>`;
+      if (skipColorBlackAndWhiteCalculation) {
+        logData += `========================================\nEnd time: ${calculationCompletedTime}\nRunning time: ${runningTime.toFixed(2)} seconds\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n\n`;
+        resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>—<br>A4 Pages: ${a4PagesTotal}<br>A3 Pages: ${a3PagesTotal}</span>`;
+      } else {
+        logData += `========================================\nEnd time: ${calculationCompletedTime}\nRunning time: ${runningTime.toFixed(2)} seconds\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n\n`;
+        resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>—<br>A4 Pages: ${a4PagesTotal}<br>A4 BW Pages: ${a4BlackAndWhitePagesTotal}<br>A4 Color Pages: ${a4ColorPagesTotal}<br>—<br>A3 Pages: ${a3PagesTotal}<br>A3 BW Pages: ${a3BlackAndWhitePagesTotal}<br>A3 Color Pages: ${a3ColorPagesTotal}</span>`;
+      }
       advancedReportButton.disabled = false;
       refreshLogWindow();
       if (container.style.display === 'block') {
