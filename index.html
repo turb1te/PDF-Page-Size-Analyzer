@@ -3,29 +3,25 @@
 
 <head>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHHCJY3543">
-  </script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-    gtag('config', 'G-LHHCJY3543');
-  </script>
   <title>PDF Page Size Analyzer</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.js">
+  <script type="module" src="pdf.mjs">
   </script>
-  <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.js';
+  <script type="module">
+    import * as pdfjsLib from './pdf.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('./pdf.worker.mjs', import.meta.url);
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <style>
+    body,
+    input,
+    textarea,
+    select,
+    button {
+      font-family: 'Inter', sans-serif !important;
+    }
+
     body {
-      font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 20px;
       background-color: #f5f5f5;
@@ -58,6 +54,13 @@
       color: #333;
     }
 
+    select:focus,
+    input[type="file"]:focus,
+    button:focus {
+      outline: none;
+      border-color: #2196F3;
+    }
+
     select,
     input[type="file"],
     button {
@@ -73,16 +76,19 @@
       transition: border-color 0.3s ease, background-color 0.3s ease;
     }
 
-    select:focus,
-    input[type="file"]:focus,
-    button:focus {
-      outline: none;
-      border-color: #2196F3;
+    input[type="file"]::-webkit-file-upload-button {
+      font-family: 'Inter', sans-serif !important;
+      color: #7c7c7c;
+      background-color: #e0e0e0;
+      border: 0;
+      box-shadow: none;
+      border-radius: 2px;
+      padding: 6px 8px 6px 8px;
+      margin-right: 10px;
     }
 
-    input[type="file"]::-webkit-file-upload-button {
-      font-family: 'Roboto', sans-serif;
-      color: #333;
+    input[type="file"]::-webkit-file-upload-button:hover {
+      background-color: #ccc;
     }
 
     .divider {
@@ -225,6 +231,63 @@
       margin-bottom: 20px;
       color: #333;
     }
+
+    button {
+      font-weight: bold !important;
+    }
+
+    #log-window {
+      font-family: 'Inter', sans-serif !important;
+      display: none;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 30%;
+      height: 50%;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102);
+      overflow: auto;
+      border-radius: 4px;
+      padding: 1em;
+    }
+
+    #log-content {
+      font-family: 'Inter', sans-serif !important;
+    }
+
+    /* Define the scrollbar styles for light theme */
+    ::-webkit-scrollbar {
+      width: 12px;
+      /* Width of the scrollbar */
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background-color: #f0f0f0;
+      /* Light background color for the scrollbar track */
+      border-radius: 4px;
+      /* Rounded corners on the track */
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+      /* Light color for the scrollbar handle */
+      border-radius: 5px;
+      /* Rounded corners on the handle */
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #ddd;
+      /* Light color for the scrollbar handle on hover */
+    }
+
+    /* Optional: Handle when active */
+    ::-webkit-scrollbar-thumb:active {
+      background-color: #bbb;
+      /* Light color for the scrollbar handle when active (clicked) */
+    }
   </style>
 </head>
 
@@ -283,12 +346,13 @@
     <div class="credits">
       <p>Made with ❤️ by Martin Kirekchiev</p>
       <hr>
-      <p> Last Updated: 30 November 2023 <br> PDF.js Version: 3.11.174 </p>
+      <p> Last Updated: 10 February 2024 <br> PDF.js Version: 4.0.379 </p>
     </div>
   </div>
-  <div id="log-window" style="display: none; position: absolute; top: 20px; right: 20px; width: 30%; height: 50%; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em;">
+  <div id="log-window">
     <pre id="log-content">
 </pre>
+  </div>
   </div>
   <script>
     let processingMode = 'parallel';
@@ -355,7 +419,7 @@
     const fileType = document.getElementById('file-type');
     const logWindow = document.getElementById('log-window');
     const logContent = document.getElementById('log-content');
-    resultDiv.textContent = '—';
+    resultDiv.innerHTML = '—';
     progressBar.style.width = '0%';
     let errorCount = 0;
     const readFileInChunks = async (file, chunkSize = 1024 * 1024) => {
@@ -414,7 +478,7 @@
     let calculationCompletedTime;
     const toggleLogWindow = () => {
       if (logWindow.style.display === 'none') {
-        logContent.textContent = logData;
+        logContent.innerHTML = logData;
         logWindow.style.display = 'block';
         logContent.scrollIntoView({
           block: 'start',
@@ -426,7 +490,7 @@
     };
     const refreshLogWindow = () => {
       if (logWindow.style.display === 'block') {
-        logContent.textContent = logData;
+        logContent.innerHTML = logData;
         logWindow.style.display = 'block';
         logContent.scrollIntoView({
           block: 'start',
@@ -703,12 +767,12 @@
       }
       setFormElementsState(false);
       progressBar.style.width = '0%';
-      resultDiv.textContent = '—';
+      resultDiv.innerHTML = '—';
       advancedReportButton.disabled = true;
       displaySizesButton.disabled = true;
       console.log(`Processing Mode: ${processingMode}`);
       console.log(`skipColorBlackAndWhiteCalculation: ${skipColorBlackAndWhiteCalculation}`);
-      const startTime = new Date().toLocaleString('en-US', {
+      const startTime = new Date().toLocaleString('bg-BG', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -717,7 +781,7 @@
         second: '2-digit'
       }).replace(',', '').replace(/\//g, '.');
       const startTime2 = performance.now();
-      logData = `\n\nPDF Page Size Analyzer Log\nStart time: ${startTime}\n\n`;
+      logData = `<br>`;
       let errorList = [];
       let validFiles = 0;
       let totalArea = 0;
@@ -743,8 +807,7 @@
           a3ColorPagesTotal += fileInfo.a3ColorPages;
           wideFormatTotal += fileInfo.wideFormatPages;
           validFiles++;
-          logData += `File: ${file.name}\nTotal Pages: ${fileInfo.numPages}\nWide Format Pages: ${fileInfo.wideFormatPages}\nA4 Black and White Pages: ${fileInfo.a4BlackAndWhitePages}\nA4 Color Pages: ${fileInfo.a4ColorPages}\nA3 Pages: ${
-        fileInfo.a3Pages}\nA3 Black and White Pages: ${fileInfo.a3BlackAndWhitePages}\nA3 Color Pages: ${fileInfo.a3ColorPages}\nArea of Wide Format Pages: ${fileInfo.area.toFixed(2)} m²\n\n`;
+          logData += `<b>${file.name}:</b><br>Total Pages: ${fileInfo.numPages}<br>Wide Format Pages: ${fileInfo.wideFormatPages}<br>&mdash;<br>A4 Black and White Pages: ${fileInfo.a4BlackAndWhitePages}<br>A4 Color Pages: ${fileInfo.a4ColorPages}<br>&mdash;<br>A3 Pages: ${fileInfo.a3Pages}<br>A3 Black and White Pages: ${fileInfo.a3BlackAndWhitePages}<br>A3 Color Pages: ${fileInfo.a3ColorPages}<br>&mdash;<br>Area of Wide Format Pages: ${fileInfo.area.toFixed(2)} m²<br><br><hr><br>`;
         } else {
           errorList.push({
             file: file.name,
@@ -755,12 +818,13 @@
         progressBar.style.width = `${Math.round(((i + 1) / inputFile.files.length) * 100)}%`;
       }
       if (errorList.length > 0) {
-        logData += `========================================\nProcessing encountered errors:\n\n`;
+        logData += `<b>Processing encountered errors:</b><br>`;
         errorList.forEach((errorItem) => {
-          logData += `${errorItem.error}\n`;
+          logData += `${errorItem.error}<br>`;
         });
+        logData += `<br><hr><br>`;
       }
-      calculationCompletedTime = new Date().toLocaleString('en-US', {
+      calculationCompletedTime = new Date().toLocaleString('bg-BG', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -771,11 +835,11 @@
       const endTime = performance.now();
       const runningTime = (endTime - startTime2) / 1000;
       if (skipColorBlackAndWhiteCalculation) {
-        logData += `========================================\nEnd time: ${calculationCompletedTime}\nRunning time: ${runningTime.toFixed(2)} seconds\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n\n`;
-        resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>—<br>A4 Pages: ${a4PagesTotal}<br>A3 Pages: ${a3PagesTotal}</span>`;
+        logData += `<b>Running time:&nbsp;&nbsp;${runningTime.toFixed(2)} seconds</b><br>Total Files:&nbsp;&nbsp;${validFiles}<br>&mdash;<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>&mdash;<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}<br>&mdash;<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br><br>`;
+        resultDiv.innerHTML = `<span style="font-size: 19px">Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>—<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}</span>`;
       } else {
-        logData += `========================================\nEnd time: ${calculationCompletedTime}\nRunning time: ${runningTime.toFixed(2)} seconds\nTotal Files: ${validFiles}\n---\nA4 Pages: ${a4PagesTotal}\nA4 BW Pages: ${a4BlackAndWhitePagesTotal}\nA4 Color Pages: ${a4ColorPagesTotal}\n---\nA3 Pages: ${a3PagesTotal}\nA3 BW Pages: ${a3BlackAndWhitePagesTotal}\nA3 Color Pages: ${a3ColorPagesTotal}\n---\nWide Format Pages: ${wideFormatTotal}\nTotal Area of Wide Format Pages: ${totalArea.toFixed(2)} m²\n\n`;
-        resultDiv.innerHTML = `<span style="font-size: 0.8em">Total Area of Wide Format Pages: ${totalArea.toFixed(2)} m²<br>Wide Format Pages: ${wideFormatTotal}<br>—<br>A4 Pages: ${a4PagesTotal}<br>A4 BW Pages: ${a4BlackAndWhitePagesTotal}<br>A4 Color Pages: ${a4ColorPagesTotal}<br>—<br>A3 Pages: ${a3PagesTotal}<br>A3 BW Pages: ${a3BlackAndWhitePagesTotal}<br>A3 Color Pages: ${a3ColorPagesTotal}</span>`;
+        logData += `<b>Running time:&nbsp;&nbsp;${runningTime.toFixed(2)} seconds</b><br>Total Files:&nbsp;&nbsp;${validFiles}<br>&mdash;<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>&mdash;<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}<br>&mdash;<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br><br>`;
+        resultDiv.innerHTML = `<span style="font-size: 19px">Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>—<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>—<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}</span>`;
       }
       advancedReportButton.disabled = false;
       refreshLogWindow();
@@ -795,7 +859,7 @@
     const container = document.getElementById('pdf-sizes-container');
     const resetResult = () => {
       progressBar.style.width = '0%';
-      resultDiv.textContent = '—';
+      resultDiv.innerHTML = '—';
       advancedReportButton.disabled = true;
       displaySizesButton.disabled = true;
       logWindow.style.display = 'none';
