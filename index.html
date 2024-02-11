@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
   <title>PDF Page Size Analyzer</title>
   <script type="module" src="pdf.mjs">
   </script>
@@ -12,283 +11,7 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <style>
-    body,
-    input,
-    textarea,
-    select,
-    button {
-      font-family: 'Inter', sans-serif !important;
-    }
-
-    body {
-      margin: 0;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
-
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 4px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    h1,
-    label {
-      color: #333;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    label,
-    .input-group {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    select:focus,
-    input[type="file"]:focus,
-    button:focus {
-      outline: none;
-      border-color: #2196F3;
-    }
-
-    select,
-    input[type="file"],
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      background-color: #f9f9f9;
-      color: #333;
-      font-size: 14px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease, background-color 0.3s ease;
-    }
-
-    input[type="file"]::-webkit-file-upload-button {
-      font-family: 'Inter', sans-serif !important;
-      color: #7c7c7c;
-      background-color: #e0e0e0;
-      border: 0;
-      box-shadow: none;
-      border-radius: 2px;
-      padding: 6px 8px 6px 8px;
-      margin-right: 10px;
-    }
-
-    input[type="file"]::-webkit-file-upload-button:hover {
-      background-color: #ccc;
-    }
-
-    .divider {
-      margin: 20px 0;
-      border-top: 1px solid #ccc;
-    }
-
-    .result-section {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .result-section h2 {
-      margin-bottom: 10px;
-      color: #333;
-    }
-
-    .result-section p {
-      font-weight: bold;
-      font-size: 24px;
-      color: #333;
-    }
-
-    .calculate-button {
-      background-color: #9f7df6;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 15px;
-      transition: background-color 0.3s ease;
-    }
-
-    .calculate-button:hover {
-      background-color: #b195f8;
-    }
-
-    .credits {
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin-top: 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .credits p {
-      margin: 0;
-      color: #333;
-      font-size: 15px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .credits:hover {
-      background-color: #f5f5f5;
-    }
-
-    .progress-bar {
-      background-color: #e6e6e6;
-      border-radius: 4px;
-      height: 15px;
-      overflow: hidden;
-    }
-
-    .progress-bar-inner {
-      background-color: #9f7df6;
-      height: 100%;
-      width: 0;
-    }
-
-    #pdf-sizes-report {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-      color: #333;
-    }
-
-    #pdf-sizes-table {
-      width: 100%;
-      border-collapse: collapse;
-      color: #333;
-    }
-
-    #pdf-sizes-table th,
-    #pdf-sizes-table td {
-      padding: 3px;
-      margin: 0;
-      text-align: center;
-      border: 1px solid #ddd;
-      color: #333;
-    }
-
-    #pdf-sizes-inner-container {
-      padding: 1em;
-    }
-
-    #pdf-sizes-container {
-      position: absolute;
-      text-align: center;
-      width: 30%;
-      height: 50%;
-      background-color: white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102);
-      overflow: auto;
-      border-radius: 4px;
-      color: #333;
-      z-index: 2;
-    }
-
-    #pdf-sizes-table td:nth-child(2),
-    #pdf-sizes-table th:nth-child(2) {
-      max-width: 100px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    #pdf-sizes-table td:nth-child(3),
-    #pdf-sizes-table th:nth-child(3) {
-      max-width: 45px;
-    }
-
-    #pdf-sizes-table td:nth-child(1),
-    #pdf-sizes-table th:nth-child(1) {
-      max-width: 12px;
-      text-align: center;
-    }
-
-    button:hover {
-      background-color: #f5f5f5;
-    }
-
-    #settings-window {
-      z-index: 3;
-    }
-
-    #settings-window h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    button {
-      font-weight: bold !important;
-    }
-
-    #log-window {
-      font-family: 'Inter', sans-serif !important;
-      display: none;
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 30%;
-      height: 50%;
-      background-color: white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102);
-      overflow: auto;
-      border-radius: 4px;
-      padding: 1em;
-    }
-
-    #log-content {
-      font-family: 'Inter', sans-serif !important;
-    }
-
-    /* Define the scrollbar styles for light theme */
-    ::-webkit-scrollbar {
-      width: 12px;
-      /* Width of the scrollbar */
-    }
-
-    /* Track */
-    ::-webkit-scrollbar-track {
-      background-color: #f0f0f0;
-      /* Light background color for the scrollbar track */
-      border-radius: 4px;
-      /* Rounded corners on the track */
-    }
-
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-      background-color: #ccc;
-      /* Light color for the scrollbar handle */
-      border-radius: 5px;
-      /* Rounded corners on the handle */
-    }
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: #ddd;
-      /* Light color for the scrollbar handle on hover */
-    }
-
-    /* Optional: Handle when active */
-    ::-webkit-scrollbar-thumb:active {
-      background-color: #bbb;
-      /* Light color for the scrollbar handle when active (clicked) */
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="styles-light.css" id="theme-stylesheet">
 </head>
 
 <body>
@@ -316,22 +39,17 @@
       <button type="button" id="display-sizes-button" onclick="displaySizes()">DISPLAY PAGE SIZES</button>
       <button type="button" id="advanced-report" onclick="toggleLogWindow()" disabled>ADVANCED REPORT</button>
       <button type="button" id="settings-button" onclick="toggleSettings()">SETTINGS</button>
-      <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2;">
+      <div id="overlay">
       </div>
-      <div id="settings-window" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 500px; background-color: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102); overflow: auto; border-radius: 4px; padding: 1em; margin: 0px;">
-        <button type="button" onclick="toggleSettings()" style="position: absolute; top: 10px; right: 10px; background-color: #ddd; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0;"> X </button>
-        <h2 style="margin-bottom: 20px;">SETTINGS</h2>
-        <label for="processingModeDropdown" style="margin-bottom: 10px;">Processing Mode:</label>
-        <select id="processingModeDropdown" style="width: 100%; margin-bottom: 10px;">
-          <option value="parallel">Parallel Processing</option>
-          <option value="sequential">Sequential Processing</option>
-        </select>
-        <label for="skipColorBlackAndWhiteCalculationDropdown" style="margin-bottom: 10px;">Color Page Detection:</label>
-        <select id="skipColorBlackAndWhiteCalculationDropdown" style="width: 100%; margin-bottom: 10px;">
+      <div id="settings-window">
+        <button type="button" id="settings-button-exit" onclick="toggleSettings()"> X </button>
+        <h2>SETTINGS</h2>
+        <label for="skipColorBlackAndWhiteCalculationDropdown">Color Page Detection:</label>
+        <select id="skipColorBlackAndWhiteCalculationDropdown">
           <option value="false">Enable</option>
           <option value="true">Disable</option>
         </select>
-        <button type="button" id="reset-to-defaults-button" onclick="resetToDefaults()" style="width: 100%; margin-top: 10px;">Reset to Defaults</button>
+        <button type="button" id="reset-to-defaults-button" onclick="resetToDefaults()">Reset to Defaults</button>
       </div>
       <div class="result-section">
         <h2>Total PDF Metrics:</h2>
@@ -355,12 +73,11 @@
   </div>
   </div>
   <script>
-    let processingMode = 'parallel';
     let skipColorBlackAndWhiteCalculation = true;
     const toggleSettings = () => {
       const settingsWindow = document.getElementById('settings-window');
       const overlay = document.getElementById('overlay');
-      if (settingsWindow.style.display === 'none') {
+      if (settingsWindow.style.display === 'none' || settingsWindow.style.display === '') {
         settingsWindow.style.display = 'block';
         overlay.style.display = 'block';
       } else {
@@ -377,35 +94,26 @@
     });
     const saveSettings = () => {
       const settings = {
-        processingMode: processingMode,
         skipColorBlackAndWhiteCalculation: skipColorBlackAndWhiteCalculation
       };
-      localStorage.setItem('pdfAnalyzerSettings', JSON.stringify(settings));
+      localStorage.setItem('pdfPageSizeAnalyzerSettings', JSON.stringify(settings));
     };
     const loadSettings = () => {
-      const storedSettings = localStorage.getItem('pdfAnalyzerSettings');
+      const storedSettings = localStorage.getItem('pdfPageSizeAnalyzerSettings');
       if (storedSettings) {
         const settings = JSON.parse(storedSettings);
-        processingMode = settings.processingMode;
         skipColorBlackAndWhiteCalculation = settings.skipColorBlackAndWhiteCalculation;
       }
     };
     const applySettingsToUI = () => {
-      document.getElementById('processingModeDropdown').value = processingMode;
       document.getElementById('skipColorBlackAndWhiteCalculationDropdown').value = skipColorBlackAndWhiteCalculation.toString();
     };
-    const toggleProcessingMode = () => {
-      processingMode = document.getElementById('processingModeDropdown').value;
-      settingsChangeHandler();
-    };
-    document.getElementById('processingModeDropdown').addEventListener('change', toggleProcessingMode);
     const handleSkipColorBlackAndWhiteCalculationChange = () => {
       skipColorBlackAndWhiteCalculation = document.getElementById('skipColorBlackAndWhiteCalculationDropdown').value === 'true';
       settingsChangeHandler();
     };
     document.getElementById('skipColorBlackAndWhiteCalculationDropdown').addEventListener('change', handleSkipColorBlackAndWhiteCalculationChange);
     const resetToDefaults = () => {
-      processingMode = 'parallel';
       skipColorBlackAndWhiteCalculation = true;
       saveSettings();
       applySettingsToUI();
@@ -422,42 +130,6 @@
     resultDiv.innerHTML = '—';
     progressBar.style.width = '0%';
     let errorCount = 0;
-    const readFileInChunks = async (file, chunkSize = 1024 * 1024) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        const chunks = [];
-        let offset = 0;
-        reader.onload = async (event) => {
-          const chunk = new Uint8Array(event.target.result);
-          chunks.push(chunk);
-          if (offset < file.size) {
-            await readNextChunk();
-          } else {
-            const concatenatedArrayBuffer = concatenateChunks(chunks);
-            resolve(concatenatedArrayBuffer);
-          }
-        };
-        reader.onerror = (error) => {
-          reject(error);
-        };
-        const readNextChunk = () => {
-          const chunk = file.slice(offset, offset + chunkSize);
-          reader.readAsArrayBuffer(chunk);
-          offset += chunkSize;
-        };
-        const concatenateChunks = (chunks) => {
-          const totalSize = chunks.reduce((acc, chunk) => acc + chunk.byteLength, 0);
-          const result = new Uint8Array(totalSize);
-          let offset = 0;
-          for (const chunk of chunks) {
-            result.set(chunk, offset);
-            offset += chunk.byteLength;
-          }
-          return result.buffer;
-        };
-        readNextChunk();
-      });
-    };
     const POINTS_TO_INCHES = 1 / 72;
     const INCHES_TO_METERS = 0.0254;
     const A4_WIDTH = 0.210;
@@ -506,37 +178,46 @@
         logWindow.style.display = 'none';
       }
     };
-    const isPixelBlackAndWhite = (r, g, b) => {
-      const tolerance = 10;
-      const maxDifference = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(b - r));
-      return maxDifference <= tolerance;
+    const isPixelBlackAndWhite = (r, g, b, tolerance = 10) => {
+    const maxDifference = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(b - r));
+    return maxDifference <= tolerance;
     };
+
     const isPageBlackAndWhite = async (page) => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      const viewport = page.getViewport({
-        scale: 1
-      });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      };
-      await page.render(renderContext).promise;
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
-      let isBlackAndWhite = true;
-      for (let i = 0; i < imageData.length; i += 16) {
-        const r = imageData[i];
-        const g = imageData[i + 1];
-        const b = imageData[i + 2];
-        if (!isPixelBlackAndWhite(r, g, b)) {
-          isBlackAndWhite = false;
-          break;
+        let canvas = document.createElement('canvas');
+        let context = canvas.getContext('2d');
+        
+        let viewport = page.getViewport({ scale: 1 });
+        let scaleFactor = 1;
+
+        canvas.width = viewport.width * scaleFactor;
+        canvas.height = viewport.height * scaleFactor;
+
+        let renderContext = {
+            canvasContext: context,
+            viewport: page.getViewport({ scale: scaleFactor }),
+        };
+
+        await page.render(renderContext).promise;
+
+        let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        let chunkSize = 32;
+
+        let isBlackAndWhite = true;
+
+        for (let i = 0; i < imageData.length; i += chunkSize) {
+            const r = imageData[i];
+            const g = imageData[i + 1];
+            const b = imageData[i + 2];
+
+            if (!isPixelBlackAndWhite(r, g, b)) {
+                isBlackAndWhite = false;
+                break;
+            }
         }
-      }
-      return isBlackAndWhite;
-      imageData = null;
+        imageData = null;
+        page = null;
+        return isBlackAndWhite;
     };
     const fileSizesCache = {};
     const pdfFileInput = document.getElementById('pdf-file');
@@ -575,9 +256,10 @@
               totalPageCounter++;
             }
           } else {
-            const fileArrayBuffer = await readFileInChunks(file);
+            let arrayBuffer = await file.arrayBuffer();
+            let pdfData = new Uint8Array(arrayBuffer);
             const pdf = await pdfjsLib.getDocument({
-              data: fileArrayBuffer
+              data: pdfData
             }).promise;
             const totalPages = pdf.numPages;
             const pageSizesArray = [];
@@ -588,8 +270,8 @@
               });
               const widthInMm = ((viewport.width * 25.4) / 72).toFixed(2);
               const heightInMm = ((viewport.height * 25.4) / 72).toFixed(2);
-              const fileLabel = `${fileNumberingCounter}`.padStart(3, '0'); // Format as 001, 002, etc.
-              const pageLabel = `${pageIndex + 1}`.padStart(2, '0'); // Format as 01, 02, etc.
+              const fileLabel = `${fileNumberingCounter}`.padStart(3, '0');
+              const pageLabel = `${pageIndex + 1}`.padStart(2, '0');
               pageSizesArray.push({
                 fileLabel,
                 pageLabel,
@@ -624,16 +306,24 @@
       sizeCell.textContent = `${width} x ${height}`;
     }
     const calculateSizes = async (file) => {
-      const fileArrayBuffer = await readFileInChunks(file);
+      let arrayBuffer = await file.arrayBuffer();
+      let pdfData = new Uint8Array(arrayBuffer);
       const pdf = await pdfjsLib.getDocument({
-        data: fileArrayBuffer
+        data: pdfData
       }).promise;
-      const page = await pdf.getPage(1);
-      const viewport = page.getViewport({
+      let page = await pdf.getPage(1);
+      let viewport = page.getViewport({
         scale: 1
       });
       const widthInMm = ((viewport.width * 25.4) / 72).toFixed(2);
       const heightInMm = ((viewport.height * 25.4) / 72).toFixed(2);
+      // Clean up resources
+      pdf.destroy();
+      page.destroy();
+      arrayBuffer = null;
+      pdfData = null;
+      page = null;
+      viewport = null;
       return {
         width: widthInMm,
         height: heightInMm
@@ -641,9 +331,10 @@
     };
     const calculateArea = async (file) => {
       try {
-        const fileArrayBuffer = await readFileInChunks(file);
+        let arrayBuffer = await file.arrayBuffer();
+        let pdfData = new Uint8Array(arrayBuffer);
         const pdf = await pdfjsLib.getDocument({
-          data: fileArrayBuffer
+          data: pdfData
         }).promise;
         const numPages = pdf.numPages;
         const pages = await Promise.all(Array.from({
@@ -657,19 +348,6 @@
         let a3BlackAndWhitePages = 0;
         let a4ColorPages = 0;
         let a3ColorPages = 0;
-        const processPagesSequentially = async () => {
-          const results = [];
-          for (const page of pages) {
-            await processPage(page);
-          }
-          return results;
-        };
-        const processPagesInParallel = async () => {
-          const results = await Promise.all(pages.map(async (page) => {
-            return processPage(page);
-          }));
-          return results;
-        };
         const processPage = async (page) => {
           const viewport = page.getViewport({
             scale: 1
@@ -708,11 +386,16 @@
             }
           }
         };
-        if (processingMode === 'parallel') {
-          await processPagesInParallel();
-        } else {
-          await processPagesSequentially();
-        }
+
+        // Use Promise.all directly for parallel processing
+        await Promise.all(pages.map(processPage));
+
+        // Clean up resources
+        pdf.destroy();
+        page = null;
+        arrayBuffer = null;
+        pdfData = null;
+
         return {
           numPages,
           area: totalArea,
@@ -770,7 +453,6 @@
       resultDiv.innerHTML = '—';
       advancedReportButton.disabled = true;
       displaySizesButton.disabled = true;
-      console.log(`Processing Mode: ${processingMode}`);
       console.log(`skipColorBlackAndWhiteCalculation: ${skipColorBlackAndWhiteCalculation}`);
       const startTime = new Date().toLocaleString('bg-BG', {
         day: '2-digit',
@@ -807,7 +489,7 @@
           a3ColorPagesTotal += fileInfo.a3ColorPages;
           wideFormatTotal += fileInfo.wideFormatPages;
           validFiles++;
-          logData += `<b>${file.name}:</b><br>Total Pages: ${fileInfo.numPages}<br>Wide Format Pages: ${fileInfo.wideFormatPages}<br>&mdash;<br>A4 Black and White Pages: ${fileInfo.a4BlackAndWhitePages}<br>A4 Color Pages: ${fileInfo.a4ColorPages}<br>&mdash;<br>A3 Pages: ${fileInfo.a3Pages}<br>A3 Black and White Pages: ${fileInfo.a3BlackAndWhitePages}<br>A3 Color Pages: ${fileInfo.a3ColorPages}<br>&mdash;<br>Area of Wide Format Pages: ${fileInfo.area.toFixed(2)} m²<br><br><hr><br>`;
+          logData += `<b>${file.name}:</b><br>Total Pages: ${fileInfo.numPages}<br>Wide Format Pages: ${fileInfo.wideFormatPages}<br>&mdash;<br>A4 Color Pages: ${fileInfo.a4ColorPages}<br>A4 Black and White Pages: ${fileInfo.a4BlackAndWhitePages}<br>&mdash;<br>A3 Color Pages: ${fileInfo.a3ColorPages}<br>A3 Pages: ${fileInfo.a3Pages}<br>A3 Black and White Pages: ${fileInfo.a3BlackAndWhitePages}<br>&mdash;<br>Area of Wide Format Pages: ${fileInfo.area.toFixed(2)} m²<br><br><hr><br>`;
         } else {
           errorList.push({
             file: file.name,
@@ -835,11 +517,11 @@
       const endTime = performance.now();
       const runningTime = (endTime - startTime2) / 1000;
       if (skipColorBlackAndWhiteCalculation) {
-        logData += `<b>Running time:&nbsp;&nbsp;${runningTime.toFixed(2)} seconds</b><br>Total Files:&nbsp;&nbsp;${validFiles}<br>&mdash;<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>&mdash;<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}<br>&mdash;<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br><br>`;
-        resultDiv.innerHTML = `<span style="font-size: 19px">Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>—<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}</span>`;
+        logData += `<b>Running time:&nbsp;&nbsp;${runningTime.toFixed(2)} seconds</b><br>Total Files:&nbsp;&nbsp;${validFiles}<br>&mdash;<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>&mdash;<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>&mdash;<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br><br>`;
+        resultDiv.innerHTML = `<span style="font-size: 18px">Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>—<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}</span>`;
       } else {
-        logData += `<b>Running time:&nbsp;&nbsp;${runningTime.toFixed(2)} seconds</b><br>Total Files:&nbsp;&nbsp;${validFiles}<br>&mdash;<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>&mdash;<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}<br>&mdash;<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br><br>`;
-        resultDiv.innerHTML = `<span style="font-size: 19px">Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>—<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>—<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}</span>`;
+        logData += `<b>Running time:&nbsp;&nbsp;${runningTime.toFixed(2)} seconds</b><br>Total Files:&nbsp;&nbsp;${validFiles}<br>&mdash;<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>&mdash;<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}<br>&mdash;<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br><br>`;
+        resultDiv.innerHTML = `<span style="font-size: 18px">Total Area of Wide Format Pages:&nbsp;&nbsp;${totalArea.toFixed(2)} m²<br>Wide Format Pages:&nbsp;&nbsp;${wideFormatTotal}<br>—<br>A4 Pages:&nbsp;&nbsp;${a4PagesTotal}<br>A4 Color Pages:&nbsp;&nbsp;${a4ColorPagesTotal}<br>A4 BW Pages:&nbsp;&nbsp;${a4BlackAndWhitePagesTotal}<br>—<br>A3 Pages:&nbsp;&nbsp;${a3PagesTotal}<br>A3 Color Pages:&nbsp;&nbsp;${a3ColorPagesTotal}<br>A3 BW Pages:&nbsp;&nbsp;${a3BlackAndWhitePagesTotal}</span>`;
       }
       advancedReportButton.disabled = false;
       refreshLogWindow();

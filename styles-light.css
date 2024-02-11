@@ -1,0 +1,323 @@
+body,
+input,
+textarea,
+select,
+button {
+	font-family: 'Inter', sans-serif !important;
+}
+
+body {
+	margin: 0;
+	padding: 20px;
+	background-color: #f5f5f5;
+}
+
+.container {
+	max-width: 400px;
+	margin: 0 auto;
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1,
+label {
+	color: #333;
+}
+
+h1 {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+label,
+.input-group {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+	color: #333;
+}
+
+select:focus,
+input[type="file"]:focus,
+button:focus {
+	outline: none;
+	border-color: #2196F3;
+}
+
+select,
+input[type="file"],
+button {
+	width: 100%;
+	padding: 10px;
+	border: none;
+	border-radius: 4px;
+	background-color: #f9f9f9;
+	color: #333;
+	font-size: 14px;
+	margin-bottom: 10px;
+	box-sizing: border-box;
+	transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+	font-family: 'Inter', sans-serif !important;
+	color: #7c7c7c;
+	background-color: #e0e0e0;
+	border: 0;
+	box-shadow: none;
+	border-radius: 2px;
+	padding: 6px 8px 6px 8px;
+	margin-right: 10px;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+	background-color: #ccc;
+}
+
+.divider {
+	margin: 20px 0;
+	border-top: 1px solid #ccc;
+}
+
+.result-section {
+	margin-top: 20px;
+	text-align: center;
+}
+
+.result-section h2 {
+	margin-bottom: 10px;
+	color: #333;
+}
+
+.result-section p {
+	font-weight: bold;
+	font-size: 24px;
+	color: #333;
+}
+
+.calculate-button {
+	background-color: #9f7df6;
+	color: #fff;
+	font-weight: bold;
+	cursor: pointer;
+	font-size: 15px;
+	transition: background-color 0.3s ease;
+}
+
+.calculate-button:hover {
+	background-color: #b195f8;
+}
+
+.credits {
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	padding: 10px;
+	margin-top: 20px;
+	position: relative;
+	z-index: 1;
+}
+
+.credits p {
+	margin: 0;
+	color: #333;
+	font-size: 15px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.credits:hover {
+	background-color: #f5f5f5;
+}
+
+.progress-bar {
+	background-color: #e6e6e6;
+	border-radius: 4px;
+	height: 15px;
+	overflow: hidden;
+}
+
+.progress-bar-inner {
+	background-color: #9f7df6;
+	height: 100%;
+	width: 0;
+}
+
+#pdf-sizes-report {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 20px;
+	color: #333;
+}
+
+#pdf-sizes-table {
+	width: 100%;
+	border-collapse: collapse;
+	color: #333;
+}
+
+#pdf-sizes-table th,
+#pdf-sizes-table td {
+	padding: 3px;
+	margin: 0;
+	text-align: center;
+	border: 1px solid #ddd;
+	color: #333;
+}
+
+#pdf-sizes-inner-container {
+	padding: 1em;
+}
+
+#pdf-sizes-container {
+	position: absolute;
+	text-align: center;
+	width: 30%;
+	height: 50%;
+	background-color: white;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102);
+	overflow: auto;
+	border-radius: 4px;
+	color: #333;
+	z-index: 2;
+}
+
+#pdf-sizes-table td:nth-child(2),
+#pdf-sizes-table th:nth-child(2) {
+	max-width: 100px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#pdf-sizes-table td:nth-child(3),
+#pdf-sizes-table th:nth-child(3) {
+	max-width: 45px;
+}
+
+#pdf-sizes-table td:nth-child(1),
+#pdf-sizes-table th:nth-child(1) {
+	max-width: 12px;
+	text-align: center;
+}
+
+button:hover {
+	background-color: #f5f5f5;
+}
+
+#settings-window {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 300px;
+	height: 500px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102);
+	overflow: auto;
+	border-radius: 4px;
+	padding: 1em;
+	margin: 0px;
+	background-color: white;
+	z-index: 3;
+}
+
+#settings-window h2 {
+	text-align: center;
+	margin-bottom: 20px;
+	color: #333;
+}
+
+#settings-window label {
+	margin-bottom: 10px;
+}
+
+#overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 2;
+}
+
+#settings-button-exit {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background-color: #ddd;
+	border: none;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+}
+
+#reset-to-defaults-button {
+	margin-top: 10px;
+}
+
+button {
+	font-weight: bold !important;
+}
+
+#log-window {
+	font-family: 'Inter', sans-serif !important;
+	display: none;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	width: 30%;
+	height: 50%;
+	background-color: white;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.102);
+	overflow: auto;
+	border-radius: 4px;
+	padding: 1em;
+}
+
+#log-content {
+	font-family: 'Inter', sans-serif !important;
+}
+
+/* Define the scrollbar styles for light theme */
+::-webkit-scrollbar {
+	width: 12px;
+	/* Width of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background-color: #f0f0f0;
+	/* Light background color for the scrollbar track */
+	border-radius: 4px;
+	/* Rounded corners on the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background-color: #ccc;
+	/* Light color for the scrollbar handle */
+	border-radius: 5px;
+	/* Rounded corners on the handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background-color: #ddd;
+	/* Light color for the scrollbar handle on hover */
+}
+
+/* Optional: Handle when active */
+::-webkit-scrollbar-thumb:active {
+	background-color: #bbb;
+	/* Light color for the scrollbar handle when active (clicked) */
+}
