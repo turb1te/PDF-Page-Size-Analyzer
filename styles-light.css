@@ -4,6 +4,10 @@ textarea,
 select,
 button {
 	font-family: 'Inter', sans-serif !important;
+	font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+@supports (font-variation-settings: normal) {
+	:root { font-family: InterVariable, sans-serif; }
 }
 
 body {
@@ -63,6 +67,7 @@ button {
 
 input[type="file"]::-webkit-file-upload-button {
 	font-family: 'Inter', sans-serif !important;
+	font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
 	color: #7c7c7c;
 	background-color: #e0e0e0;
 	border: 0;
